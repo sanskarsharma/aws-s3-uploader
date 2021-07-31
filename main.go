@@ -42,10 +42,13 @@ func main() {
 	}
  
 	filepath := os.Args[1]
+	s3Filepath := os.Args[2]
+
 	fmt.Println("filepath is ",filepath)
+	fmt.Println("s3Filepath is ",s3Filepath)
 
 	// Upload
-	err = AddFileToS3(sess, filepath)
+	err = AddFileToS3(sess, filepath, s3Filepath)
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
@@ -53,7 +56,7 @@ func main() {
 
 }
 
-func AddFileToS3(s *session.Session, fileDir string) error {
+func AddFileToS3(s *session.Session, fileDir string, s3Filepath string) error {
 
     // Open the file for use
     file, err := os.Open(fileDir)
@@ -73,7 +76,7 @@ func AddFileToS3(s *session.Session, fileDir string) error {
     // Config settings: this is where you choose the bucket, filename, content-type etc. of the file you're uploading.
     _, err = s3.New(s).PutObject(&s3.PutObjectInput{
         Bucket:               aws.String(AWS_S3_BUCKET),
-        Key:                  aws.String("postgres_backups_1"),
+        Key:                  aws.String(s3Filepath),
         Body:                 bytes.NewReader(buffer),
         // ContentType:          aws.String(http.DetectContentType(buffer)),
         // ContentDisposition:   aws.String("attachment"),
